@@ -2,6 +2,8 @@ import org.lwjgl.*;
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.*;
 import org.lwjgl.system.*;
+import org.lwjgl.assimp.*;
+import org.lwjgl.opengl.ContextAttribs.*;
 
 import java.nio.*;
 
@@ -22,6 +24,12 @@ public class Main {
     public void run() {
         init();
         loop();
+
+        String osName = System.getProperty("os.name");
+
+       /*  ContextAttribs attribs = new ContextAttribs(3, 2);
+        if (osName.contains("Mac"))
+            context = new ContextAttribs(3, 2); */
 
         // Free the window callbacks and destroy the window
         glfwFreeCallbacks(window);
@@ -61,8 +69,7 @@ public class Main {
             glfwSetWindowPos(
                     window,
                     (vidmode.width() - pWidth.get(0)) / 2,
-                    (vidmode.height() - pHeight.get(0)) / 2
-            );
+                    (vidmode.height() - pHeight.get(0)) / 2);
         }
 
         // Make the OpenGL context current
@@ -91,10 +98,9 @@ public class Main {
 
     public static void main(String[] args) {
         try {
-        new Main().run();
-    } catch (Exception e) {
-        e.printStackTrace(); // See what's going wrong
-    }
+            new Main().run();
+        } catch (Exception e) {
+            e.printStackTrace(); // See what's going wrong
+        }
     }
 }
-

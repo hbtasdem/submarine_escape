@@ -1,17 +1,15 @@
 {
-    "version": "0.2.0",
-    "configurations": [
-      {
-        "type": "jdk",
-        "request": "launch",
-        "name": "Run Submarine Game",
-        "mainClass": "Main",
-        "vmArgs": "-XstartOnFirstThread -Djava.library.path=lib",
-        "classPaths": [
-          "bin",
-          "lib/*"
-        ]
-      }
-    ]
-  }
-  
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Run Submarine Game",
+      "type": "java",
+      "request": "launch",
+      "mainClass": "Main",
+      "cwd": "${workspaceFolder}",
+      "vmArgs": "-XstartOnFirstThread -cp bin:lib/*",
+      "preLaunchTask": "Build Submarine Escape",
+      "console": "internalConsole"
+    }
+  ]
+}
