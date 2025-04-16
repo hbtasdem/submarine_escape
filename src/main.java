@@ -22,14 +22,19 @@ public class Main {
     private String title = "Submarine Escape";
 
     public void run() {
+
+        // example usage of shader for now //int shader =
+        // shaderUtils.load("shaders/shader.vert", "shaders/shader.frag");
         init();
         loop();
 
         String osName = System.getProperty("os.name");
 
-       /*  ContextAttribs attribs = new ContextAttribs(3, 2);
-        if (osName.contains("Mac"))
-            context = new ContextAttribs(3, 2); */
+        /*
+         * ContextAttribs attribs = new ContextAttribs(3, 2);
+         * if (osName.contains("Mac"))
+         * context = new ContextAttribs(3, 2);
+         */
 
         // Free the window callbacks and destroy the window
         glfwFreeCallbacks(window);
