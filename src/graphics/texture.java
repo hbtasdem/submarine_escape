@@ -52,6 +52,14 @@ public class texture {
         return tex;
     }
 
+    public void bind() {
+        glBindTexture(GL_TEXTURE_2D, texture);
+    }
+
+    public void unbind() {
+        glBindTexture(GL_TEXTURE_2D, 0);
+    }
+
     public int getWidth() {
         return width;
     }
