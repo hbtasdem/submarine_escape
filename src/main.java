@@ -22,7 +22,10 @@ public class Main {
     private int height = 720;
     private String title = "Submarine Escape";
     private float submarineY = 0.0f; // Submarine's vertical position
+    private float submarineX = -0.8f; // starting X position
     private float speed = 0.02f; // Speed of movement
+    float scale = 0.5f;
+    float offsetX = 0f;
     MazeGenerator maze;
 
     public void run() {
@@ -58,27 +61,23 @@ public class Main {
             throw new IllegalStateException("Unable to initialize GLFW");
 
         // Configure GLFW
-        glfwDefaultWindowHints(); // clear the default settings
-        glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // set window invisible to setup position, context wo showing
+        glfwDefaultWindowHints();
+        glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
         // Create the window
-        window = glfwCreateWindow(width, height, title, NULL, NULL); // window is a long variable storing the memory
-                                                                     // address (ID) of game window
+        window = glfwCreateWindow(width, height, title, NULL, NULL);
         if (window == NULL)
             throw new RuntimeException("Failed to create the GLFW window");
 
         // Center the window
-        // using try is important to ensure that the memory leak doesn't happen bc it
-        // returns it after the block ends
-        try (MemoryStack stack = stackPush()) { // allocates native memory temporarily
+        try (MemoryStack stack = stackPush()) {
             IntBuffer pWidth = stack.mallocInt(1);
             IntBuffer pHeight = stack.mallocInt(1);
 
-            glfwGetWindowSize(window, pWidth, pHeight); // fills the buffers with current width/height of the window
-            GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor()); // gets the monitor resolution
+            glfwGetWindowSize(window, pWidth, pHeight);
+            GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
 
-            // moves the window to the center of the screen
             glfwSetWindowPos(
                     window,
                     (vidmode.width() - pWidth.get(0)) / 2,
@@ -86,35 +85,37 @@ public class Main {
         }
 
         maze = new MazeGenerator();
-        // Context is the state machine openGl uses to draw things: buffers, shaders,
-        // textures etc
-        // You can only create and use the OpenGL context on the main thread.
+
         // Make the OpenGL context current
         glfwMakeContextCurrent(window);
 
+        // Initialize OpenGL capabilities
         GL.createCapabilities();
 
-        // Enable v-sync
-        glfwSwapInterval(1); // game wait 1s refresh before swapping buffers so new frames doesn't get drawn
-                             // during a refresh
-        // Make the window visible
-        glfwShowWindow(window); // undo the invisible mode from glfwWindowHint
+        // Enable V-Sync
+        glfwSwapInterval(1);
 
+        // Show the window
+        glfwShowWindow(window);
+
+        // Set the OpenGL viewport for the full window
         glViewport(0, 0, width, height); // Set viewport size to window size
 
+        // Add framebuffer size callback to adjust OpenGL viewport on resize
         glfwSetFramebufferSizeCallback(window, (window, newWidth, newHeight) -> {
             glViewport(0, 0, newWidth, newHeight);
         });
     }
 
     private void loop() {
-        GL.createCapabilities(); // init OpenGL
+        // Ensure the OpenGL context is created before using OpenGL functions.
+        // GL.createCapabilities(); // Initialize OpenGL capabilities.
 
-        // Set clear color to simulate the ocean
-        glClearColor(0f, 0.5f, 1f, 1f); // ocean blue
+        // Set the clear color to simulate the ocean (light blue background)
+        glClearColor(0f, 0.5f, 1f, 1f); // Ocean blue
 
         while (!glfwWindowShouldClose(window)) {
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the frame buffer
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear the screen
 
             // Handle keyboard input for vertical movement
             if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
@@ -124,19 +125,28 @@ public class Main {
             if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
                 submarineY -= speed; // Move down
             }
+            if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
+                submarineX -= speed; // Move left
+            }
+
+            if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
+                submarineX += speed; // Move right
+            }
 
             // Limit vertical movement within window height range
-            submarineY = Math.max(-1.0f, Math.min(1.0f, submarineY)); // Clamping the value
+            submarineX = Math.max(-1.0f, Math.min(1.0f, submarineX)); // Clamp horizontally
+            submarineY = Math.max(-1.0f, Math.min(1.0f, submarineY)); // Clamp value
 
-            // Render the submarine (placeholder for now)
-            renderSubmarine();
+            // Render the submarine
+            renderSubmarine(submarineX, submarineY);
+            renderMaze(scale);
 
-            glfwSwapBuffers(window); // swap the color buffers
-            glfwPollEvents(); // processes all pending events (keyboard, mouse etc) to react
+            glfwSwapBuffers(window); // Swap buffers for next frame
+            glfwPollEvents(); // Handle events (keyboard, mouse, etc.)
         }
     }
 
-    private void renderSubmarine() {
+    private void renderSubmarine(float x, float y) {
         // TO DO: Render a simple rectangle as a placeholder for the submarine
         glPushMatrix();
         glTranslatef(0f, submarineY, 0f); // Move submarine to the current vertical position
@@ -150,10 +160,18 @@ public class Main {
         glEnd();
 
         glPopMatrix();
+    }
 
-        maze.update(0.01f); // moves the maze forward, spawns/despawns segments
-        maze.render(); // renders all current segments
+    private void renderMaze(float scale) {
+        glPushMatrix();
+        glScalef(scale, scale, 1.0f); // Scale down the maze
 
+        maze.update(0.01f); // move forward
+        offsetX -= 0.002f;
+        glTranslatef(offsetX, 0f, 0f); // you could animate offsetX leftwards for movement
+        maze.render(); // draw it
+
+        glPopMatrix();
     }
 
     public static void main(String[] args) {
