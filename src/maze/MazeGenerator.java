@@ -48,6 +48,12 @@ public class MazeGenerator {
         currentZ += segmentLength;
     }
 
+    public void render() {
+        for (MazeSegment segment : segments) {
+            segment.render();
+        }
+    }
+
     public List<MazeSegment> getSegments() {
         return segments;
     }

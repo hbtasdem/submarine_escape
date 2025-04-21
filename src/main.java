@@ -2,7 +2,8 @@ import org.lwjgl.*;
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.*;
 import org.lwjgl.system.*;
-
+import maze.MazeGenerator;
+import maze.MazeSegment;
 //import org.lwjgl.opengl.ContextAttribs.*;
 
 import java.nio.*;
@@ -22,6 +23,7 @@ public class Main {
     private String title = "Submarine Escape";
     private float submarineY = 0.0f; // Submarine's vertical position
     private float speed = 0.02f; // Speed of movement
+    MazeGenerator maze;
 
     public void run() {
 
@@ -83,16 +85,26 @@ public class Main {
                     (vidmode.height() - pHeight.get(0)) / 2);
         }
 
+        maze = new MazeGenerator();
         // Context is the state machine openGl uses to draw things: buffers, shaders,
         // textures etc
         // You can only create and use the OpenGL context on the main thread.
         // Make the OpenGL context current
         glfwMakeContextCurrent(window);
+
+        GL.createCapabilities();
+
         // Enable v-sync
         glfwSwapInterval(1); // game wait 1s refresh before swapping buffers so new frames doesn't get drawn
                              // during a refresh
         // Make the window visible
         glfwShowWindow(window); // undo the invisible mode from glfwWindowHint
+
+        glViewport(0, 0, width, height); // Set viewport size to window size
+
+        glfwSetFramebufferSizeCallback(window, (window, newWidth, newHeight) -> {
+            glViewport(0, 0, newWidth, newHeight);
+        });
     }
 
     private void loop() {
@@ -138,6 +150,10 @@ public class Main {
         glEnd();
 
         glPopMatrix();
+
+        maze.update(0.01f); // moves the maze forward, spawns/despawns segments
+        maze.render(); // renders all current segments
+
     }
 
     public static void main(String[] args) {
