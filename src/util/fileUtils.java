@@ -4,11 +4,11 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 
-public class fileUtils {
+public class FileUtils {
 
     // private constructor below, can't instantiate this class so purely static, so
     // no need for instances
-    private fileUtils() {
+    private FileUtils() {
 
     }
 

@@ -2,10 +2,12 @@ package util;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 
-public class bufferUtils {
+public class BufferUtils {
 
-    private bufferUtils() {
+    private BufferUtils() {
 
     }
 

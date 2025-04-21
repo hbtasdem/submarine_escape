@@ -2,20 +2,19 @@ package graphics;
 
 import static org.lwjgl.opengl.GL11.*;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.awt.image.BufferedImage;
 
 import javax.imageio.ImageIO;
 
-import util.bufferUtils;
+import util.BufferUtils;
 
-public class texture {
+public class Texture {
 
     private int width, height;
     private int texture;
 
-    public texture(String path) {
+    public Texture(String path) {
         texture = load(path);
     }
 
@@ -47,7 +46,7 @@ public class texture {
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST); // aliasing prevention
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE,
-                bufferUtils.createIntBuffer(data));
+                BufferUtils.createIntBuffer(data));
         glBindTexture(GL_TEXTURE_2D, 0);
         return tex;
     }

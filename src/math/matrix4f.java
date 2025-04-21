@@ -2,12 +2,12 @@ package math;
 
 import static java.lang.Math.*;
 
-public class matrix4f {
+public class Matrix4f {
 
     public float[] matrix = new float[4 * 4];
 
-    public static matrix4f identity() { // identity mat setup
-        matrix4f result = new matrix4f();
+    public static Matrix4f identity() { // identity mat setup
+        Matrix4f result = new Matrix4f();
 
         for (int i = 0; i < 4 * 4; i++) {
             result.matrix[i] = 0.0f;
@@ -21,9 +21,9 @@ public class matrix4f {
         return result;
     }
 
-    public matrix4f multiply(matrix4f matrix) { // multiplication mat setup
+    public Matrix4f multiply(Matrix4f matrix) { // multiplication mat setup
 
-        matrix4f result = new matrix4f();
+        Matrix4f result = new Matrix4f();
 
         for (int y = 0; y < 4; y++) {
             for (int x = 0; x < 4; x++) {
@@ -37,9 +37,9 @@ public class matrix4f {
         return result;
     }
 
-    public static matrix4f translate(vector3f vector) { // translation mat setup
+    public static Matrix4f translate(Vector3f vector) { // translation mat setup
 
-        matrix4f result = identity();
+        Matrix4f result = identity();
 
         result.matrix[0 + 3 * 4] = vector.x;
         result.matrix[1 + 3 * 4] = vector.y;
@@ -49,10 +49,10 @@ public class matrix4f {
     }
 
     // since 2D, rot matrix is only set for z axis
-    public static matrix4f rotate(float angle) { // rotation mat setup
+    public static Matrix4f rotate(float angle) { // rotation mat setup
         // java takes angle in rad
 
-        matrix4f result = identity();
+        Matrix4f result = identity();
         float r = (float) toRadians(angle);
         float cos = (float) cos(r);
         float sin = (float) sin(r);
@@ -65,9 +65,9 @@ public class matrix4f {
         return result;
     }
 
-    public static matrix4f orthographic(float left, float right, float bottom, float top, float near, float far) {
+    public static Matrix4f orthographic(float left, float right, float bottom, float top, float near, float far) {
 
-        matrix4f result = identity();
+        Matrix4f result = identity();
 
         result.matrix[0 + 0 * 4] = 2.0f / (right - left);
         result.matrix[1 + 1 * 4] = 2.0f / (top - bottom);

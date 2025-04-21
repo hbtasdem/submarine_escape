@@ -1,21 +1,33 @@
 {
   "version": "2.0.0",
   "tasks": [
-    {
-      "label": "Build Submarine Escape",
-      "type": "shell",
-      "command": "javac",
-      "args": [
-        "-d", "bin",
-        "-cp", "lib/*",
-        "src/Main.java"
-      ],
-      "group": {
-        "kind": "build",
-        "isDefault": true
+      {
+          "label": "javac",
+          "type": "shell",
+          "command": "javac",
+          "args": [
+              "-d", "bin",
+              "-cp", "lib/*",    // Include all JARs in lib/
+              "src/**/*.java"
+          ],
+          "group": {
+              "kind": "build",
+              "isDefault": true
+          },
+          "problemMatcher": [
+              "$javac"
+          ]
       },
-      "problemMatcher": ["$javac"],
-      "detail": "Compiles the Submarine Escape game using LWJGL"
-    }
+      {
+          "label": "run",
+          "type": "shell",
+          "command": "java",
+          "args": [
+              "-cp", "bin:lib/*",  // Include all JARs in lib and the compiled classes
+              "Main"  // Your main class (without the .java extension)
+          ],
+          "group": "build",
+          "dependsOn": "javac"
+      }
   ]
 }
