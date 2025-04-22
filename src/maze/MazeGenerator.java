@@ -11,9 +11,10 @@ public class MazeGenerator {
     private float segmentLength = 20.0f; // Distance between segments
     private float spawnDistance = 100.0f; // How far ahead segments are generated
     private float despawnDistance = 50.0f; // How far behind segments are removed
-
-    private float currentZ = 0.0f; // Tracks the front of the maze
     private Random random;
+
+    private float currentX = 0.0f; // Tracks the front of the maze
+    private static final float SEGMENT_WIDTH = MazeSegment.WIDTH;
 
     public MazeGenerator() {
         segments = new ArrayList<>();
@@ -25,27 +26,33 @@ public class MazeGenerator {
         }
     }
 
-    public void update(float playerZ) {
+    public void update(float speed) {
         // Add new segments if player is approaching the end
-        while (currentZ - playerZ < spawnDistance) {
-            addSegment();
+        for (MazeSegment segment : segments) {
+            segment.update(speed);
         }
 
         // Remove segments far behind
         Iterator<MazeSegment> it = segments.iterator();
         while (it.hasNext()) {
             MazeSegment segment = it.next();
-            if (playerZ - segment.getPosition().z > despawnDistance) {
+            if (segment.isOffScreen()) {
                 it.remove();
             }
+        }
+
+        while (currentX < 2.0f) { // CHANGED: Keep generating to the right
+            addSegment();
         }
     }
 
     private void addSegment() {
-        // Optional: randomize width/height later
-        MazeSegment segment = new MazeSegment(currentZ, 10.0f, 10.0f);
+
+        float topY = random.nextFloat() * 0.3f + 0.2f; // CHANGED: randomized height (20%–50%)
+        float bottomY = random.nextFloat() * 0.3f + 0.2f;
+        MazeSegment segment = new MazeSegment(currentX, topY, bottomY); // CHANGED
         segments.add(segment);
-        currentZ += segmentLength;
+        currentX += MazeSegment.WIDTH;
     }
 
     public void render() {

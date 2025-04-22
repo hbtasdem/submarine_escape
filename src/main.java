@@ -1,10 +1,7 @@
-import org.lwjgl.*;
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.*;
 import org.lwjgl.system.*;
 import maze.MazeGenerator;
-import maze.MazeSegment;
-//import org.lwjgl.opengl.ContextAttribs.*;
 
 import java.nio.*;
 
@@ -21,12 +18,14 @@ public class Main {
     private int width = 1280;
     private int height = 720;
     private String title = "Submarine Escape";
+
     private float submarineY = 0.0f; // Submarine's vertical position
     private float submarineX = -0.8f; // starting X position
     private float speed = 0.02f; // Speed of movement
-    float scale = 0.5f;
+    float scale = 1.0f;
     float offsetX = 0f;
-    MazeGenerator maze;
+
+    private MazeGenerator maze;
 
     public void run() {
 
@@ -34,14 +33,6 @@ public class Main {
         // shaderUtils.load("shaders/shader.vert", "shaders/shader.frag");
         init();
         loop();
-
-        String osName = System.getProperty("os.name");
-
-        /*
-         * ContextAttribs attribs = new ContextAttribs(3, 2);
-         * if (osName.contains("Mac"))
-         * context = new ContextAttribs(3, 2);
-         */
 
         // Free the window callbacks and destroy the window
         glfwFreeCallbacks(window);
@@ -86,19 +77,10 @@ public class Main {
 
         maze = new MazeGenerator();
 
-        // Make the OpenGL context current
-        glfwMakeContextCurrent(window);
-
-        // Initialize OpenGL capabilities
-        GL.createCapabilities();
-
-        // Enable V-Sync
+        glfwMakeContextCurrent(window); // Make the OpenGL context current
+        GL.createCapabilities(); // Initialize OpenGL capabilities
         glfwSwapInterval(1);
-
-        // Show the window
         glfwShowWindow(window);
-
-        // Set the OpenGL viewport for the full window
         glViewport(0, 0, width, height); // Set viewport size to window size
 
         // Add framebuffer size callback to adjust OpenGL viewport on resize
@@ -108,36 +90,25 @@ public class Main {
     }
 
     private void loop() {
-        // Ensure the OpenGL context is created before using OpenGL functions.
-        // GL.createCapabilities(); // Initialize OpenGL capabilities.
-
-        // Set the clear color to simulate the ocean (light blue background)
-        glClearColor(0f, 0.5f, 1f, 1f); // Ocean blue
+        glClearColor(0f, 0.5f, 1f, 1f); // set the color to ocean blue
 
         while (!glfwWindowShouldClose(window)) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear the screen
 
             // Handle keyboard input for vertical movement
-            if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
+            if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
                 submarineY += speed; // Move up
-            }
-
-            if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
+            if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
                 submarineY -= speed; // Move down
-            }
-            if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
+            if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
                 submarineX -= speed; // Move left
-            }
-
-            if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
+            if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
                 submarineX += speed; // Move right
-            }
 
             // Limit vertical movement within window height range
             submarineX = Math.max(-1.0f, Math.min(1.0f, submarineX)); // Clamp horizontally
             submarineY = Math.max(-1.0f, Math.min(1.0f, submarineY)); // Clamp value
 
-            // Render the submarine
             renderSubmarine(submarineX, submarineY);
             renderMaze(scale);
 
@@ -149,7 +120,7 @@ public class Main {
     private void renderSubmarine(float x, float y) {
         // TO DO: Render a simple rectangle as a placeholder for the submarine
         glPushMatrix();
-        glTranslatef(0f, submarineY, 0f); // Move submarine to the current vertical position
+        glTranslatef(0f, y, 0f); // Move submarine to the current vertical position
 
         glBegin(GL_QUADS); // Draw rectangle
         glColor3f(1f, 0f, 0f); // Red color for the submarine
