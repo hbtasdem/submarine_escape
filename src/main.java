@@ -137,7 +137,7 @@ public class Main {
         glPushMatrix();
         glScalef(scale, scale, 1.0f); // Scale down the maze
 
-        maze.update(0.01f); // move forward
+        maze.update(0.01f, offsetX); // move forward IMP
         offsetX -= 0.002f;
         glTranslatef(offsetX, 0f, 0f); // you could animate offsetX leftwards for movement
         maze.render(); // draw it

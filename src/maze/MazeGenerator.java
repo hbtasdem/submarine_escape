@@ -8,9 +8,11 @@ import java.util.Random;
 public class MazeGenerator {
 
     private List<MazeSegment> segments;
-    private float segmentLength = 20.0f; // Distance between segments
+
+    // change these to change the total lenght of the maze
     private float spawnDistance = 100.0f; // How far ahead segments are generated
-    private float despawnDistance = 50.0f; // How far behind segments are removed
+    private float despawnDistance = 100.0f; // How far behind segments are removed
+
     private Random random;
 
     private float currentX = 0.0f; // Tracks the front of the maze
@@ -26,22 +28,22 @@ public class MazeGenerator {
         }
     }
 
-    public void update(float speed) {
-        // Add new segments if player is approaching the end
+    public void update(float speed, float offsetX) {
         for (MazeSegment segment : segments) {
-            segment.update(speed);
+            segment.update(speed); // This likely just shifts left
         }
 
-        // Remove segments far behind
+        // Despawn segments far behind the screen
         Iterator<MazeSegment> it = segments.iterator();
         while (it.hasNext()) {
             MazeSegment segment = it.next();
-            if (segment.isOffScreen()) {
+            if (segment.getX() - offsetX < -despawnDistance) {
                 it.remove();
             }
         }
 
-        while (currentX < 2.0f) { // CHANGED: Keep generating to the right
+        // Spawn new segments ahead of visible screen
+        while (currentX - offsetX < spawnDistance) {
             addSegment();
         }
     }

@@ -46,4 +46,8 @@ public class MazeSegment {
         glVertex2f(x, 1.0f - topY);
         glEnd();
     }
+
+    public float getX() {
+        return x;
+    }
 }
