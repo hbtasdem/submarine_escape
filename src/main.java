@@ -1,6 +1,8 @@
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.*;
 import org.lwjgl.system.*;
+
+import maze.CoralManager;
 import maze.MazeGenerator;
 
 import java.nio.*;
@@ -19,18 +21,24 @@ public class Main {
     private int height = 720;
     private String title = "Submarine Escape";
 
+    float deltaTime = 1.0f / 60.0f;
+    float mazeHeight = 0.5f;
+
     private float submarineY = 0.0f; // Submarine's vertical position
     private float submarineX = -0.8f; // starting X position
+
+    float submarineWidth = 0.1f; // Width of the submarine
+    float submarineHeight = 0.1f;
+
     private float speed = 0.02f; // Speed of movement
     float scale = 1.0f;
     float offsetX = 0f;
 
     private MazeGenerator maze;
+    private CoralManager coralManager;
 
     public void run() {
 
-        // example usage of shader for now //int shader =
-        // shaderUtils.load("shaders/shader.vert", "shaders/shader.frag");
         init();
         loop();
 
@@ -76,6 +84,7 @@ public class Main {
         }
 
         maze = new MazeGenerator();
+        coralManager = new CoralManager(); // Fixed CoralManager instantiation
 
         glfwMakeContextCurrent(window); // Make the OpenGL context current
         GL.createCapabilities(); // Initialize OpenGL capabilities
@@ -111,6 +120,16 @@ public class Main {
 
             renderSubmarine(submarineX, submarineY);
             renderMaze(scale);
+
+            // Update and render the coral obstacles
+            coralManager.update(deltaTime, mazeHeight); // Pass both deltaTime and mazeHeight
+            coralManager.render(); // Render the coral obstacles
+
+            // Check for collisions between the submarine and coral obstacles
+            if (coralManager.checkCollisions(submarineX, submarineY, submarineWidth, submarineHeight)) {
+                System.out.println("Collision detected! Game Over.");
+                // Handle game over logic (you can stop the game, reduce health, etc.)
+            }
 
             glfwSwapBuffers(window); // Swap buffers for next frame
             glfwPollEvents(); // Handle events (keyboard, mouse, etc.)
