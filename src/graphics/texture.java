@@ -19,7 +19,7 @@ public class Texture {
     }
 
     private int load(String path) {
-        int[] pixels = null; // int array w each element being the color of the pixel
+        int[] pixels = null;
         try {
             BufferedImage image = ImageIO.read(new FileInputStream(path));
             width = image.getWidth();
@@ -30,23 +30,30 @@ public class Texture {
             e.printStackTrace();
         }
 
-        // change the order of the color bits passed in to match java
         int[] data = new int[width * height];
         for (int i = 0; i < width * height; i++) {
-            int a = (pixels[i] & 0xff000000) >> 24;
-            int r = (pixels[i] & 0xff0000) >> 16;
-            int g = (pixels[i] & 0xff00) >> 8;
-            int b = (pixels[i] & 0xff);
+            int a = (pixels[i] >> 24) & 0xFF;
+            int r = (pixels[i] >> 16) & 0xFF;
+            int g = (pixels[i] >> 8) & 0xFF;
+            int b = pixels[i] & 0xFF;
 
             data[i] = a << 24 | b << 16 | g << 8 | r;
         }
 
         int tex = glGenTextures();
-        glBindTexture(GL_TEXTURE_2D, tex); // selected the texture
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST); // aliasing prevention
+        glBindTexture(GL_TEXTURE_2D, tex);
+
+        // Texture settings
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+        // Important for scrolling backgrounds:
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE,
                 BufferUtils.createIntBuffer(data));
+
         glBindTexture(GL_TEXTURE_2D, 0);
         return tex;
     }
@@ -63,7 +70,7 @@ public class Texture {
         return width;
     }
 
-    public int getHeigth() {
+    public int getHeight() {
         return height;
     }
 

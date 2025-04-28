@@ -4,10 +4,13 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
+import graphics.Texture;
 
 public class MazeGenerator {
 
     private List<MazeSegment> segments;
+
+    private static Texture mazeTexture;
 
     // change these to change the total lenght of the maze
     private float spawnDistance = 100.0f; // How far ahead segments are generated
@@ -18,11 +21,26 @@ public class MazeGenerator {
     private float currentX = 0.0f; // Tracks the front of the maze
     private static final float SEGMENT_WIDTH = MazeSegment.WIDTH;
 
+    // public MazeGenerator() {
+    // segments = new ArrayList<>();
+    // random = new Random();
+    // mazeTexture = new Texture("res/maze.png");
+
+    // // Initial segments
+    // for (int i = 0; i < 5; i++) {
+    // addSegment();
+    // }
+    // }
+
     public MazeGenerator() {
         segments = new ArrayList<>();
         random = new Random();
+    }
 
-        // Initial segments
+    // New method to load texture AFTER OpenGL context is ready
+    public void init() {
+        mazeTexture = new Texture("res/maze.png");
+
         for (int i = 0; i < 5; i++) {
             addSegment();
         }
@@ -52,7 +70,7 @@ public class MazeGenerator {
 
         float topY = random.nextFloat() * 0.3f + 0.2f; // CHANGED: randomized height (20%–50%)
         float bottomY = random.nextFloat() * 0.3f + 0.2f;
-        MazeSegment segment = new MazeSegment(currentX, topY, bottomY); // CHANGED
+        MazeSegment segment = new MazeSegment(currentX, topY, bottomY, mazeTexture); // CHANGED
         segments.add(segment);
         currentX += MazeSegment.WIDTH;
     }

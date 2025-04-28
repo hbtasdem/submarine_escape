@@ -6,6 +6,7 @@ import maze.CoralManager;
 import maze.MazeGenerator;
 
 import java.nio.*;
+import graphics.Texture;
 
 import static org.lwjgl.glfw.Callbacks.*; //useful for clean shutdown -> avoid memory leaks when ur closing the game window
 import static org.lwjgl.glfw.GLFW.*; //creates windows, input handling, context, exiting etc
@@ -33,6 +34,10 @@ public class Main {
     private float speed = 0.02f; // Speed of movement
     float scale = 1.0f;
     float offsetX = 0f;
+
+    private Texture submarineTexture;
+    private Texture backgroundTexture;
+    private float bgOffset = 0f;
 
     private MazeGenerator maze;
     private CoralManager coralManager;
@@ -83,11 +88,19 @@ public class Main {
                     (vidmode.height() - pHeight.get(0)) / 2);
         }
 
-        maze = new MazeGenerator();
-        coralManager = new CoralManager(); // Fixed CoralManager instantiation
-
         glfwMakeContextCurrent(window); // Make the OpenGL context current
         GL.createCapabilities(); // Initialize OpenGL capabilities
+
+        maze = new MazeGenerator();
+        maze.init();
+        coralManager = new CoralManager(); // Fixed CoralManager instantiation
+        submarineTexture = new Texture("res/submarine.png"); // texture inst
+        backgroundTexture = new Texture("res/ocean.png");
+
+        glEnable(GL_TEXTURE_2D);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
         glfwSwapInterval(1);
         glfwShowWindow(window);
         glViewport(0, 0, width, height); // Set viewport size to window size
@@ -118,6 +131,9 @@ public class Main {
             submarineX = Math.max(-1.0f, Math.min(1.0f, submarineX)); // Clamp horizontally
             submarineY = Math.max(-1.0f, Math.min(1.0f, submarineY)); // Clamp value
 
+            bgOffset -= 0.0005f;
+
+            renderBackground();
             renderSubmarine(submarineX, submarineY);
             renderMaze(scale);
 
@@ -136,18 +152,46 @@ public class Main {
         }
     }
 
-    private void renderSubmarine(float x, float y) {
-        // TO DO: Render a simple rectangle as a placeholder for the submarine
-        glPushMatrix();
-        glTranslatef(0f, y, 0f); // Move submarine to the current vertical position
+    private void renderBackground() {
+        backgroundTexture.bind();
 
-        glBegin(GL_QUADS); // Draw rectangle
-        glColor3f(1f, 0f, 0f); // Red color for the submarine
-        glVertex2f(-0.05f, 0.05f); // Top left
-        glVertex2f(0.05f, 0.05f); // Top right
-        glVertex2f(0.05f, -0.05f); // Bottom right
-        glVertex2f(-0.05f, -0.05f); // Bottom left
+        glColor3f(1f, 1f, 1f);
+        glBegin(GL_QUADS);
+        glTexCoord2f(bgOffset, 0);
+        glVertex2f(-1f, -1f);
+        glTexCoord2f(bgOffset + 1, 0);
+        glVertex2f(1f, -1f);
+        glTexCoord2f(bgOffset + 1, 1);
+        glVertex2f(1f, 1f);
+        glTexCoord2f(bgOffset, 1);
+        glVertex2f(-1f, 1f);
         glEnd();
+
+        backgroundTexture.unbind();
+    }
+
+    private void renderSubmarine(float x, float y) {
+        glPushMatrix();
+        glTranslatef(0f, y, 0f);
+
+        float scale = 4.0f; // Scale factor to enlarge the submarine
+        glScalef(scale, scale, 1f);
+
+        submarineTexture.bind();
+
+        glColor3f(1f, 1f, 1f);
+        glBegin(GL_QUADS);
+        glTexCoord2f(0, 1);
+        glVertex2f(-submarineWidth / 2, -submarineHeight / 2);
+        glTexCoord2f(1, 1);
+        glVertex2f(submarineWidth / 2, -submarineHeight / 2);
+        glTexCoord2f(1, 0);
+        glVertex2f(submarineWidth / 2, submarineHeight / 2);
+        glTexCoord2f(0, 0);
+        glVertex2f(-submarineWidth / 2, submarineHeight / 2);
+        glEnd();
+
+        submarineTexture.unbind();
 
         glPopMatrix();
     }
