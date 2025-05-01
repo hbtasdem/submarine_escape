@@ -5,27 +5,49 @@
 // import java.util.List;
 // import java.util.Random;
 
+// import graphics.Texture;
+
 // public class CoralManager {
 //     private List<CoralObstacle> obstacles = new ArrayList<>();
 //     private Random random = new Random();
 //     private float spawnTimer = 0;
-//     private final float SPAWN_INTERVAL = 2f;
 
-//     public void update(float deltaTime, float mazeHeight) {
+//     private static final float SPAWN_INTERVAL = 2f;
+//     private static final int MAX_OBSTACLES = 3;
+
+//     private Texture coralTexture;
+//     private Texture trashTexture;
+
+//     public CoralManager() {
+//         coralTexture = new Texture("res/coral.png");
+//         trashTexture = new Texture("res/trash.png");
+//     }
+
+//     public void update(float deltaTime, float mazeHeight, float scale) {
 //         spawnTimer += deltaTime;
 
-//         if (spawnTimer >= SPAWN_INTERVAL) {
+//         if (obstacles.size() < MAX_OBSTACLES && spawnTimer >= SPAWN_INTERVAL) {
 //             spawnTimer = 0;
-//             float height = 0.15f + random.nextFloat() * 0.25f; // between 0.15 and 0.4
-//             float width = 0.05f + random.nextFloat() * 0.1f; // between 0.05 and 0.15
-//             float y = random.nextFloat() * (mazeHeight - height);
-//             float speed = 0.5f + random.nextFloat() * 1.0f;
-//             int type = 0;
 
-//             obstacles.add(new CoralObstacle(1.2f, y, width, height, speed, type));
+//             if (mazeHeight >= ProceduralSettings.MAZE_HEIGHT_THRESHOLD_FOR_SPAWN) {
+//                 float baseHeight = 0.15f + random.nextFloat() * 0.2f;
+//                 float baseWidth = 0.05f + random.nextFloat() * 0.1f;
+
+//                 float height = baseHeight * scale;
+//                 float width = baseWidth * scale;
+
+//                 float gapStartY = (1.0f - mazeHeight) / 2.0f;
+//                 float y = gapStartY + random.nextFloat() * (mazeHeight - height); // spawn inside gap
+
+//                 float speed = 0.01f + random.nextFloat() * 0.1f;
+
+//                 int type = random.nextFloat() < ProceduralSettings.getCoralTrashRatio() ? 1 : 0;
+//                 Texture tex = (type == 0) ? coralTexture : trashTexture;
+
+//                 obstacles.add(new CoralObstacle(1.2f, y, width, height, speed, type, tex));
+//             }
 //         }
 
-//         // Move and remove off-screen corals
 //         Iterator<CoralObstacle> it = obstacles.iterator();
 //         while (it.hasNext()) {
 //             CoralObstacle coral = it.next();
@@ -61,14 +83,13 @@ import java.util.Random;
 
 import graphics.Texture;
 
-import static org.lwjgl.opengl.GL11.*;
-
 public class CoralManager {
     private List<CoralObstacle> obstacles = new ArrayList<>();
     private Random random = new Random();
     private float spawnTimer = 0;
 
     private static final float SPAWN_INTERVAL = 2f;
+    private static final float MIN_SAFE_GAP = 0.6f; // Don't spawn if maze too tight
     private static final int MAX_OBSTACLES = 3;
 
     private Texture coralTexture;
@@ -79,21 +100,30 @@ public class CoralManager {
         trashTexture = new Texture("res/trash.png");
     }
 
-    public void update(float deltaTime, float mazeHeight, float scale) {
+    public void update(float deltaTime, float mazeGapHeight, float scale) {
         spawnTimer += deltaTime;
 
-        if (obstacles.size() < MAX_OBSTACLES && spawnTimer >= SPAWN_INTERVAL) {
+        if (mazeGapHeight < MIN_SAFE_GAP)
+            return;
+
+        if (spawnTimer >= SPAWN_INTERVAL && obstacles.size() < MAX_OBSTACLES) {
             spawnTimer = 0;
 
-            float baseHeight = 0.15f + random.nextFloat() * 0.15f;
-            float baseWidth = 0.05f + random.nextFloat() * 0.1f;
+            float height = (0.1f + random.nextFloat() * 0.2f) * scale;
+            float width = (0.05f + random.nextFloat() * 0.1f) * scale;
 
-            float height = baseHeight * scale;
-            float width = baseWidth * scale;
+            // Ensure obstacle stays within central gap
+            float safeMargin = 0.05f;
+            float minY = -1.0f + (1.0f - mazeGapHeight) + safeMargin;
+            float maxY = 1.0f - mazeGapHeight - height - safeMargin;
+            float mazeHeight = 0.3f;
 
-            float maxY = Math.max(0.01f, mazeHeight - height);
-            float y = random.nextFloat() * maxY;
-            float speed = 0.01f + random.nextFloat() * 0.1f;
+            if (maxY <= minY)
+                return; // skip if there's no room
+
+            float y = random.nextFloat() * (mazeHeight - height);
+
+            float speed = 0.02f + random.nextFloat() * 0.03f;
 
             int type = random.nextFloat() < ProceduralSettings.getCoralTrashRatio() ? 1 : 0;
             Texture tex = (type == 0) ? coralTexture : trashTexture;

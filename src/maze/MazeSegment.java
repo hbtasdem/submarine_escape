@@ -29,6 +29,37 @@ public class MazeSegment {
         return x + WIDTH < -1.0f;
     }
 
+    public boolean collidesWith(float subX, float subY, float subW, float subH) {
+        // Submarine bounding box
+        float subLeft = subX - subW / 2;
+        float subRight = subX + subW / 2;
+        float subTop = subY + subH / 2;
+        float subBottom = subY - subH / 2;
+
+        // Maze segment bounding boxes
+        float segLeft = x;
+        float segRight = x + WIDTH;
+
+        // Floor (bottom)
+        float floorTop = -1.0f + bottomY;
+
+        // Ceiling (top)
+        float ceilingBottom = 1.0f - topY;
+
+        // If submarine overlaps horizontally with maze segment
+        if (subRight > segLeft && subLeft < segRight) {
+            // If submarine overlaps with floor
+            if (subBottom < floorTop)
+                return true;
+
+            // If submarine overlaps with ceiling
+            if (subTop > ceilingBottom)
+                return true;
+        }
+
+        return false;
+    }
+
     public void render() {
         if (texture == null)
             return; // Safety check!

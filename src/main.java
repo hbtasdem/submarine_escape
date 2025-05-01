@@ -4,6 +4,7 @@ import org.lwjgl.system.*;
 
 import maze.CoralManager;
 import maze.MazeGenerator;
+import maze.MazeSegment;
 import maze.ProceduralSettings;
 
 import java.nio.*;
@@ -167,6 +168,14 @@ public class Main {
             renderSubmarine(submarineX, submarineY);
             renderMaze(scale);
             mazeHeight = maze.getLatestGapHeight();
+
+            for (MazeSegment segment : maze.getSegments()) {
+                if (segment.collidesWith(submarineX, submarineY, submarineWidth, submarineHeight)) {
+                    System.out.println("Maze collision detected! Game Over.");
+                    gameOver = true;
+                    break;
+                }
+            }
 
             // Update and render the coral obstacles
             coralManager.update(deltaTime, mazeHeight, scale); // Pass both deltaTime and
