@@ -1,6 +1,11 @@
 package util;
 
 import static org.lwjgl.opengl.GL20.*;
+
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+
 import static org.lwjgl.opengl.GL11.GL_FALSE;
 
 public class ShaderUtils {
@@ -53,5 +58,17 @@ public class ShaderUtils {
         glValidateProgram(program);
 
         return program;
+    }
+
+    public static String load_as_string(String filePath) {
+        StringBuilder result = new StringBuilder();
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            while ((line = reader.readLine()) != null)
+                result.append(line).append("\n");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return result.toString();
     }
 }

@@ -64,10 +64,17 @@ public class CoralObstacle {
         return x + width < -1.1f;
     }
 
+    // public boolean collidesWith(float subX, float subY, float subW, float subH) {
+    // float subRight = subX + subW / 2;
+
+    // return subRight >= x && subRight <= x + width && // Right edge touches coral
+    // subY + subH / 2 > y && subY - subH / 2 < y + height; // Vertical overlap
+    // }
     public boolean collidesWith(float subX, float subY, float subW, float subH) {
         return subX - subW / 2 < x + width &&
                 subX + subW / 2 > x &&
                 subY - subH / 2 < y + height &&
                 subY + subH / 2 > y;
     }
+
 }

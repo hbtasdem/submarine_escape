@@ -2,6 +2,9 @@ package math;
 
 import static java.lang.Math.*;
 
+import java.nio.FloatBuffer;
+import util.BufferUtils;
+
 public class Matrix4f {
 
     public float[] matrix = new float[4 * 4];
@@ -82,4 +85,7 @@ public class Matrix4f {
 
     }
 
+    public FloatBuffer toFloatBuffer() {
+        return BufferUtils.createFloatBuffer(matrix);
+    }
 }
