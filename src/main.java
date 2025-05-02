@@ -34,10 +34,11 @@ public class Main {
     private float submarineY = 0.0f;
     private float submarineX = -0.8f;
 
-    float submarineWidth = 0.1f;
-    float submarineHeight = 0.1f;
+    float submarineWidth = 0.09f;
+    float submarineHeight = 0.09f;
 
-    private float speed = 0.02f;
+    private float speed = 0.01f;
+
     float scale = 1.0f;
     float offsetX = 0f;
 
@@ -173,7 +174,7 @@ public class Main {
                     hitColor = new Vector3f(0.6f, 0.6f, 0.6f); // gray
                     hitIntensity = 0.5f;
                     System.out.println("Maze collision!");
-                    gameOver = true;
+                    // gameOver = true;
                     break;
                 }
             }
@@ -186,12 +187,27 @@ public class Main {
             // hitIntensity = 0.5f;
             // System.out.println("Coral/Trash collision!");
             // }
-            if (coralManager.checkCollisions(submarineX, submarineY, scaledSubW, scaledSubH)) {
-                hitColor = new Vector3f(1f, 0f, 0f); // red
-                hitIntensity = 0.5f; // reset every frame while colliding
-                System.out.println("Coral/Trash collision!");
-            }
 
+            // works
+            // if (coralManager.checkCollisions(0, submarineY, scaledSubW, scaledSubH)) {
+            // hitColor = new Vector3f(1f, 0f, 0f); // red
+            // hitIntensity = 0.5f; // reset every frame while colliding
+            // System.out.println("Coral/Trash collision!");
+            // }
+            if (!gameOver) {
+                int hitType = coralManager.getCollisionType(0f, submarineY, scaledSubW, scaledSubH);
+                if (hitType == 0) { // coral
+                    hitColor = new Vector3f(1f, 0.5f, 1f); // pink
+                    hitIntensity = 0.5f;
+                    System.out.println("Hit coral!");
+                    // gameOver = true;
+                } else if (hitType == 1) { // trash
+                    hitColor = new Vector3f(0.3f, 1f, 0.3f); // green
+                    hitIntensity = 0.5f;
+                    System.out.println("Hit trash!");
+                    // gameOver = true;
+                }
+            }
             // for (MazeSegment segment : maze.getSegments()) {
             // if (segment.collidesWith(submarineX, submarineY, submarineWidth,
             // submarineHeight)) {
@@ -249,7 +265,7 @@ public class Main {
                 glEnd();
 
                 Shader.HIT.disable();
-                hitIntensity -= deltaTime * 1.5f;
+                hitIntensity -= deltaTime * 20.0f;
             }
 
             glfwSwapBuffers(window);
@@ -276,7 +292,7 @@ public class Main {
     private void renderSubmarine(float x, float y) {
         glPushMatrix();
 
-        glTranslatef(x, y, 0f);
+        glTranslatef(0, y, 0f);
         float scale = 4.0f;
         glScalef(scale, scale, 1f);
 

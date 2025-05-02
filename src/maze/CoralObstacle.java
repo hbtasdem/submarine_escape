@@ -77,4 +77,7 @@ public class CoralObstacle {
                 subY + subH / 2 > y;
     }
 
+    public int getType() {
+        return type;
+    }
 }

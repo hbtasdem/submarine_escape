@@ -220,10 +220,21 @@ public class CoralManager {
             if (maxY <= minY)
                 return;
 
-            float y = random.nextFloat() * (mazeHeight - height);
+            // safe y range for obstacle creation (randomize obstcale height)
+            float gapStartY = -mazeGapHeight / 2f;
+            float yRange = mazeGapHeight - height;
+
+            if (yRange <= 0f)
+                return; // Don't spawn if obstacle can't fit
+            float y = gapStartY + random.nextFloat() * yRange;
+
             float speed = 0.4f + random.nextFloat() * 0.2f; // Fast enough to be visible and challenging
 
-            int type = random.nextFloat() < ProceduralSettings.getCoralTrashRatio() ? 1 : 0;
+            // this diva code
+            // int type = random.nextFloat() < ProceduralSettings.getCoralTrashRatio() ? 1 :
+            // 0;
+            float threshold = ProceduralSettings.getCoralTrashRatio();
+            int type = (random.nextInt(10) < threshold * 10) ? 1 : 0;
             Texture tex = random.nextBoolean() ? coralTexture : trashTexture;
             obstacles.add(new CoralObstacle(1.2f, y, width, height, speed, type, tex));
         }
@@ -251,5 +262,14 @@ public class CoralManager {
             }
         }
         return false;
+    }
+
+    public int getCollisionType(float subX, float subY, float subW, float subH) {
+        for (CoralObstacle coral : obstacles) {
+            if (coral.collidesWith(subX, subY, subW, subH)) {
+                return coral.getType(); // 0 = coral, 1 = trash
+            }
+        }
+        return -1; // no collision
     }
 }
