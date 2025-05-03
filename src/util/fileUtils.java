@@ -6,6 +6,7 @@ import java.io.IOException;
 
 public class FileUtils {
 
+    // java info
     // private constructor below, can't instantiate this class so purely static, so
     // no need for instances
     private FileUtils() {
@@ -26,7 +27,7 @@ public class FileUtils {
             reader.close();
         } catch (IOException e) {
             e.printStackTrace();
-        } // cmd + shift + o to import needed packages
+        } // cmd + shift + o to import needed packages***
         return result;
     }
 }

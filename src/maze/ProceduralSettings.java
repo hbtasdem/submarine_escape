@@ -2,14 +2,14 @@ package maze;
 
 public class ProceduralSettings {
 
-    // === MAZE SETTINGS ===
+    // === maze settings ===
     public static final float MAZE_TOP_HEIGHT_MIN = 0.2f;
     public static final float MAZE_TOP_HEIGHT_MAX = 0.5f;
     public static final float MAZE_BOTTOM_HEIGHT_MIN = 0.2f;
     public static final float MAZE_BOTTOM_HEIGHT_MAX = 0.5f;
     public static final float MAZE_HEIGHT_THRESHOLD_FOR_SPAWN = 0.6f;
 
-    // === CORAL SPAWN SETTINGS ===
+    // === coral spawn settings ===
     public static final float CORAL_SPAWN_INTERVAL = 2.0f;
     public static final float CORAL_WIDTH_MIN = 0.05f;
     public static final float CORAL_WIDTH_MAX = 0.15f;
@@ -21,7 +21,7 @@ public class ProceduralSettings {
     public static final float CORAL_SPEED_BASE = 0.5f;
     public static final float CORAL_SPEED_VARIATION = 1.0f;
 
-    // === USER-TUNABLE SETTINGS ===
+    // === user-tunable controls ===
     private static float coralScale = 1.0f;
 
     public static float getCoralScale() {
@@ -32,14 +32,14 @@ public class ProceduralSettings {
         coralScale = scale;
     }
 
-    // === Coral Type Frequency Control ===
-    private static float coralTrashRatio = 0.5f; // 0.0 to 1.0 → 0.5 = 50% coral, 50% trash
+    // === coral type freq controls ===
+    private static float coralTrashRatio = 0.5f; // 0.5 = 50% coral, 50% trash
 
     public static float getCoralTrashRatio() {
         return coralTrashRatio;
     }
 
     public static void setCoralTrashRatio(float ratio) {
-        coralTrashRatio = Math.max(0.0f, Math.min(1.0f, ratio)); // Clamp between 0 and 1
+        coralTrashRatio = Math.max(0.0f, Math.min(1.0f, ratio)); // 0 - 1 range
     }
 }

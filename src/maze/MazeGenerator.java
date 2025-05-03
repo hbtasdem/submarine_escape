@@ -13,7 +13,7 @@ public class MazeGenerator {
     private List<MazeSegment> segments;
     private Texture texture;
 
-    private float spawnDistance = 100.0f;
+    private float spawnDistance = 200.0f;
     private float despawnDistance = 100.0f;
     private float currentX = 0.0f;
 
@@ -36,7 +36,7 @@ public class MazeGenerator {
             segment.update(speed);
         }
 
-        // Remove old segments
+        // removes old segments
         Iterator<MazeSegment> it = segments.iterator();
         while (it.hasNext()) {
             MazeSegment segment = it.next();
@@ -45,7 +45,7 @@ public class MazeGenerator {
             }
         }
 
-        // Add new segments if needed
+        // adds new segments if needed
         while (currentX - offsetX < spawnDistance) {
             addSegment();
         }

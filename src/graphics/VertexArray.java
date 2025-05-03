@@ -13,7 +13,7 @@ public class VertexArray {
     private int count;
 
     private VertexArray() {
-        // Use static factory method to create safely
+        
     }
 
     public static VertexArray createBasic(int count) {

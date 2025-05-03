@@ -31,9 +31,11 @@ public class Main {
     float deltaTime = 1.0f / 60.0f;
     float mazeHeight = 0.5f;
 
+    // pos
     private float submarineY = 0.0f;
     private float submarineX = -0.8f;
 
+    // dimensions
     float submarineWidth = 0.09f;
     float submarineHeight = 0.09f;
 
@@ -41,13 +43,13 @@ public class Main {
 
     float scale = 1.0f;
     float offsetX = 0f;
+    private float bgOffset = 0f;
 
     private float inputCooldown = 0f;
     private long lastFrameTime = System.nanoTime();
 
     private Texture submarineTexture;
     private Texture backgroundTexture;
-    private float bgOffset = 0f;
 
     private MazeGenerator maze;
     private CoralManager coralManager;
@@ -55,6 +57,7 @@ public class Main {
     private Vector3f hitColor = new Vector3f(0f, 0f, 0f);
     private float hitIntensity = 0f;
 
+    // logic params
     private boolean gameOver = false;
     boolean mazeCollision = false;
     private boolean coralHit = false;
@@ -96,14 +99,14 @@ public class Main {
         glfwMakeContextCurrent(window);
         GL.createCapabilities();
 
-        Shader.loadAll();
+        Shader.loadAll(); // flash effect
 
         maze = new MazeGenerator();
-        maze.init();
-
         coralManager = new CoralManager();
         submarineTexture = new Texture("res/submarine.png");
         backgroundTexture = new Texture("res/ocean.png");
+
+        maze.init();
 
         glEnable(GL_TEXTURE_2D);
         glEnable(GL_BLEND);
@@ -127,15 +130,13 @@ public class Main {
             glClearColor(0f, 0.5f, 1f, 1f);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-            if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
-                submarineY += speed;
-            if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
-                submarineY -= speed;
-            if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
-                submarineX -= speed;
-            if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
-                submarineX += speed;
+            // movement controls
+            // if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+            // submarineY += speed;
+            // if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+            // submarineY -= speed;
 
+            // obstacle type controls T/C
             float cooldownTime = 0.2f;
             inputCooldown -= deltaTime;
             if (inputCooldown <= 0f) {
@@ -156,95 +157,49 @@ public class Main {
             submarineX = Math.max(-1.0f, Math.min(1.0f, submarineX));
             submarineY = Math.max(-1.0f, Math.min(1.0f, submarineY));
 
-            bgOffset -= 0.0005f;
+            bgOffset -= 0.0005f; // bg scroll
 
+            mazeHeight = maze.getLatestGapHeight();
             renderBackground();
             renderSubmarine(submarineX, submarineY);
             renderMaze(scale);
-            mazeHeight = maze.getLatestGapHeight();
+            coralManager.update(deltaTime, mazeHeight, scale);
+            coralManager.render();
 
-            float drawScale = 4.0f; // Same scale used in glScalef
+            // fix the difference between the visual submarine and rendered submarine
+            float drawScale = 4.0f; // same scale used in glScalef
             float scaledSubW = submarineWidth * drawScale;
             float scaledSubH = submarineHeight * drawScale;
 
-            // Maze collision
+            // maze collision & gray flash effect
             for (MazeSegment segment : maze.getSegments()) {
                 if (segment.collidesWith(submarineX, submarineY, scaledSubW, scaledSubH)) {
                     mazeCollision = true;
                     hitColor = new Vector3f(0.6f, 0.6f, 0.6f); // gray
                     hitIntensity = 0.5f;
-                    System.out.println("Maze collision!");
-                    // gameOver = true;
+                    // System.out.println("Maze collision!"); // Debug
+                    // gameOver = true; //messes obstacle hit flash up
                     break;
                 }
             }
 
-            // boolean coralCollision = coralManager.checkCollisions(submarineX, submarineY,
-            // scaledSubW, scaledSubH);
-
-            // if (coralCollision) {
-            // hitColor = new Vector3f(1f, 0f, 0f); // red
-            // hitIntensity = 0.5f;
-            // System.out.println("Coral/Trash collision!");
-            // }
-
-            // works
-            // if (coralManager.checkCollisions(0, submarineY, scaledSubW, scaledSubH)) {
-            // hitColor = new Vector3f(1f, 0f, 0f); // red
-            // hitIntensity = 0.5f; // reset every frame while colliding
-            // System.out.println("Coral/Trash collision!");
-            // }
+            // hit type detector
             if (!gameOver) {
                 int hitType = coralManager.getCollisionType(0f, submarineY, scaledSubW, scaledSubH);
                 if (hitType == 0) { // coral
                     hitColor = new Vector3f(1f, 0.5f, 1f); // pink
                     hitIntensity = 0.5f;
-                    System.out.println("Hit coral!");
-                    // gameOver = true;
+                    // System.out.println("Hit coral!"); // Debug
+                    // gameOver = true; //messes obstacle hit flash up
                 } else if (hitType == 1) { // trash
                     hitColor = new Vector3f(0.3f, 1f, 0.3f); // green
                     hitIntensity = 0.5f;
-                    System.out.println("Hit trash!");
-                    // gameOver = true;
+                    // System.out.println("Hit trash!"); // Debug
+                    // gameOver = true; //messes obstacle hit flash up
                 }
             }
-            // for (MazeSegment segment : maze.getSegments()) {
-            // if (segment.collidesWith(submarineX, submarineY, submarineWidth,
-            // submarineHeight)) {
-            // mazeCollision = true;
-            // hitColor = new Vector3f(0.6f, 0.6f, 0.6f); // gray
-            // hitIntensity = 0.5f;
-            // System.out.println("Maze collision!");
-            // gameOver = true;
-            // break;
-            // }
-            // }
 
-            // if (!mazeCollision &&
-            // coralManager.checkCollisions(submarineX, submarineY, submarineWidth,
-            // submarineHeight)) {
-
-            // if (!coralHit) {
-            // hitColor = new Vector3f(1f, 0f, 0f); // red
-            // hitIntensity = 0.5f;
-            // System.out.println("Coral/Trash collision!");
-            // coralHit = true;
-            // }
-
-            // gameOver = true;
-            // }
-
-            coralManager.update(deltaTime, mazeHeight, scale);
-            coralManager.render();
-
-            // if (!gameOver && coralManager.checkCollisions(submarineX, submarineY,
-            // submarineWidth, submarineHeight)) {
-            // hitColor = new Vector3f(1f, 0f, 0f);
-            // hitIntensity = 0.5f;
-            // System.out.println("Collision detected with coral or trash!");
-            // gameOver = true;
-            // }
-
+            // movement controls
             if (!gameOver) {
                 if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
                     submarineY += speed;
@@ -252,6 +207,7 @@ public class Main {
                     submarineY -= speed;
             }
 
+            // makes sure the flash effect fades off
             if (hitIntensity > 0f) {
                 Shader.HIT.enable();
                 Shader.HIT.setUniform3f("hitColor", hitColor);

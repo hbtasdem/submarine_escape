@@ -32,10 +32,10 @@ public class ShaderUtils {
         glShaderSource(vertID, vert);
         glShaderSource(fragID, frag);
 
-        // compile both the shaders
+        // compile both shaders
         glCompileShader(vertID);
 
-        // shader syntax checker
+        // shader syntax checker for vert
         if (glGetShaderi(vertID, GL_COMPILE_STATUS) == GL_FALSE) {
             System.err.println("Failed to compile the vertex shader..");
             System.err.println(glGetShaderInfoLog(vertID, 2048));
@@ -43,7 +43,7 @@ public class ShaderUtils {
 
         glCompileShader(fragID);
 
-        // shader syntax checker
+        // shader syntax checker for frag
         if (glGetShaderi(fragID, GL_COMPILE_STATUS) == GL_FALSE) {
             System.err.println("Failed to compile the fragment shader..");
             System.err.println(glGetShaderInfoLog(fragID, 2048));

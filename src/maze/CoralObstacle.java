@@ -12,20 +12,20 @@ public class CoralObstacle {
     private static Texture coralTexture = new Texture("res/coral.png");
     private static Texture trashTexture = new Texture("res/trash.png");
 
-    // ✅ NEW constructor for procedural generation
+    // constructor for procedural generation
     public CoralObstacle(Texture texture, float height, float scale) {
         this.texture = texture;
         this.height = height;
-        this.width = 0.1f * scale; // or scale width however you want
+        this.width = 0.1f * scale; 
         this.speed = 0.5f;
 
         this.x = 1.2f; // start offscreen to the right
-        this.y = (float) (Math.random() * (1.5f - height)); // randomized vertical position
+        this.y = (float) (Math.random() * (1.5f - height)); // randomized vertical pos
 
         this.type = texture == coralTexture ? 0 : 1;
     }
 
-    // 🟡 Existing detailed constructor (unchanged)
+    // constructor 1
     public CoralObstacle(float x, float y, float width, float height, float speed, int type, Texture texture) {
         this.x = x;
         this.y = y;
@@ -64,12 +64,15 @@ public class CoralObstacle {
         return x + width < -1.1f;
     }
 
+    // === old collision algo ===
     // public boolean collidesWith(float subX, float subY, float subW, float subH) {
     // float subRight = subX + subW / 2;
 
     // return subRight >= x && subRight <= x + width && // Right edge touches coral
     // subY + subH / 2 > y && subY - subH / 2 < y + height; // Vertical overlap
     // }
+
+    // AABB implemented - assumes the middle point of the submarine
     public boolean collidesWith(float subX, float subY, float subW, float subH) {
         return subX - subW / 2 < x + width &&
                 subX + subW / 2 > x &&

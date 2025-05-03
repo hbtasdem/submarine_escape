@@ -22,7 +22,7 @@ public class Shader {
     private Map<String, Integer> locationCache = new HashMap<>();
 
     public Shader() {
-        // Defer shader loading
+        
     }
 
     public void load(String vertexPath, String fragmentPath) {
@@ -45,7 +45,6 @@ public class Shader {
         glAttachShader(ID, vertexID);
         glAttachShader(ID, fragmentID);
 
-        // 🔑 Bind attribute BEFORE linking
         glBindAttribLocation(ID, VERTEX_ATTRIB, "position");
 
         glLinkProgram(ID);

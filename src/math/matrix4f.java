@@ -16,7 +16,7 @@ public class Matrix4f {
             result.matrix[i] = 0.0f;
         }
 
-        result.matrix[0 + 0 * 4] = 1.0f; // col 1 row 1 //how does this syntax work to create an identity matrix
+        // result.matrix[0 + 0 * 4] = 1.0f; // col 1 row 1 //how does this syntax work to create an identity matrix
         result.matrix[1 + 1 * 4] = 1.0f;
         result.matrix[2 + 2 * 4] = 1.0f;
         result.matrix[3 + 3 * 4] = 1.0f;
